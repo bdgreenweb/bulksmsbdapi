@@ -1,340 +1,122 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>BDBulkSMS.net — API Manual — bd bulk sms | bulk sms bd | bulksmsbd</title>
-  <meta name="description" content="Official BDBulkSMS.net API Manual — send SMS, check balance, rates and stats. Examples for curl, fetch (JSON/GET/POST). Optimized for bd bulk sms, bulk sms bd and bulksmsbd." />
-  <meta name="keywords" content="BDBulkSMS, bd bulk sms, bulk sms bd, bulksmsbd, SMS API, SMS balance, SMS stats, token" />
-  <meta name="author" content="BDBulkSMS.net" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23007acc' width='100' height='100'/><text x='50' y='58' font-size='48' text-anchor='middle' font-family='Arial' fill='white'>SMS</text></svg>">
-
-  <!-- Structured data (Web API) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebAPI",
-    "name": "BDBulkSMS API",
-    "url": "https://api.bdbulksms.net/api.php",
-    "description": "Send and manage SMS for bd bulk sms use cases — endpoints for sending messages, checking balance and stats.",
-    "provider": {
-      "@type": "Organization",
-      "name": "BDBulkSMS.net",
-      "url": "https://bdbulksms.net"
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BD Bulk SMS API Manual - BDBulkSMS.net</title>
+<meta name="description" content="Complete API manual for BD Bulk SMS (BDBulkSMS.net) including SMS sending, balance check, expiry date, SMS rates, and monthly statistics.">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        background: #f4f6f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
     }
-  }
-  </script>
-
-  <style>
-    :root{
-      --bg:#0f1720; --card:#0b1220; --muted:#9aa6b2; --accent:#08a0ff; --glass: rgba(255,255,255,0.03);
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
-      color-scheme: dark;
+    header {
+        background: linear-gradient(135deg, #0073e6, #005bb5);
+        color: white;
+        text-align: center;
+        padding: 1.5rem;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(8,160,255,0.06), transparent 6%),
-                  linear-gradient(180deg,#061018 0%, #071426 100%);
-      color:#e6f0f6;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding:32px;
+    header h1 {
+        margin: 0;
+        font-size: 2rem;
     }
-
-    .container{max-width:1100px;margin:0 auto}
-    header{display:flex;align-items:center;gap:16px;margin-bottom:24px}
-    .brand{
-      display:flex;gap:12px;align-items:center;
-      background:var(--glass);padding:10px 14px;border-radius:12px;
-      box-shadow:0 4px 18px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    main {
+        max-width: 900px;
+        margin: auto;
+        background: white;
+        padding: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 8px;
     }
-    .logo{
-      width:56px;height:56px;border-radius:10px;display:grid;place-items:center;
-      background:linear-gradient(135deg,var(--accent),#2dd4bf);
-      font-weight:700;color:#05202a;font-size:14px;
-      box-shadow:0 6px 18px rgba(8,160,255,0.06);
+    h2 {
+        color: #005bb5;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 5px;
     }
-    h1{font-size:20px;margin:0}
-    p.lead{margin:6px 0 0;color:var(--muted);font-size:13px}
-
-    .row{display:grid;grid-template-columns:1fr 380px;gap:20px}
-    @media (max-width:980px){ .row{grid-template-columns:1fr} }
-
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border:1px solid rgba(255,255,255,0.03);
-      padding:22px;border-radius:14px;box-shadow:0 8px 30px rgba(2,6,23,0.6);
+    code {
+        background: #eee;
+        padding: 3px 6px;
+        border-radius: 4px;
+        font-family: Consolas, monospace;
     }
-
-    /* Hero & highlights */
-    .hero{display:flex;flex-direction:column;gap:14px}
-    .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(8,160,255,0.12);color:var(--accent);font-weight:600;font-size:13px}
-    .big{font-size:26px;margin:0}
-    .muted{color:var(--muted);font-size:14px}
-
-    /* endpoint table */
-    table{width:100%;border-collapse:collapse;margin-top:8px}
-    th,td{padding:10px 8px;text-align:left;border-bottom:1px dashed rgba(255,255,255,0.03);vertical-align:top;font-size:13px}
-    th{color:var(--muted);font-weight:600}
-    code.inline{background:rgba(255,255,255,0.02);padding:2px 6px;border-radius:6px;font-family:var(--mono);font-size:12px}
-
-    /* code blocks */
-    pre{background:#020617;border-radius:10px;padding:14px;font-family:var(--mono);font-size:13px;overflow:auto;color:#cfeefe}
-    .code-row{display:flex;gap:8px;align-items:flex-start}
-    button.copy{
-      margin-left:auto;border:0;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);color:var(--muted);
-      cursor:pointer;font-weight:600;font-size:12px;
+    a {
+        color: #0073e6;
+        text-decoration: none;
     }
-    .small{font-size:12px;color:var(--muted)}
-    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:600;color:var(--muted);font-size:12px}
-
-    /* sections */
-    section + section{margin-top:18px}
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media (max-width:700px){ .grid-2{grid-template-columns:1fr} }
-
-    footer{margin-top:26px;color:var(--muted);font-size:13px;text-align:center}
-
-    /* Search / quick actions */
-    .side-actions{display:flex;flex-direction:column;gap:12px}
-    .side-actions .card{padding:14px}
-    .link{display:block;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);text-decoration:none;color:var(--accent);font-weight:600}
-    .token-link{word-break:break-all}
-    .kbd{font-family:var(--mono);background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:6px}
-  </style>
+    a:hover {
+        text-decoration: underline;
+    }
+    ul {
+        margin: 0 0 1rem 1.2rem;
+    }
+    footer {
+        text-align: center;
+        font-size: 0.9rem;
+        color: #666;
+        padding: 1rem;
+        margin-top: 2rem;
+    }
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <div class="logo">SMS</div>
-        <div>
-          <h1>BDBulkSMS.net — API Manual</h1>
-          <p class="lead">Quick reference for sending SMS, checking balance, rates and stats — for bd bulk sms, bulk sms bd and bulksmsbd use cases.</p>
-        </div>
-      </div>
-      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-        <button id="toggleTheme" class="pill" title="Toggle light/dark">Toggle theme</button>
-      </div>
-    </header>
 
-    <div class="row">
-      <!-- main content -->
-      <main class="card">
-        <div class="hero">
-          <span class="badge">API — Send SMS • Balance • Stats</span>
-          <h2 class="big">BDBulkSMS.net API — Quick Start</h2>
-          <p class="muted">This page documents the available endpoints (plain text & JSON), parameters and examples. Keep your <span class="kbd">token</span> secret.</p>
-        </div>
+<header>
+    <h1>BD Bulk SMS API Manual - BDBulkSMS.net</h1>
+    <p>Complete API Reference for Sending and Managing SMS</p>
+</header>
 
-        <section aria-labelledby="endpoints">
-          <h3 id="endpoints">Primary Endpoints</h3>
-          <table>
-            <thead><tr><th>Purpose</th><th>Endpoint</th></tr></thead>
-            <tbody>
-              <tr><td>Send SMS (HTML output)</td><td><code class="inline">https://api.bdbulksms.net/api.php</code></td></tr>
-              <tr><td>Send SMS (JSON output)</td><td><code class="inline">https://api.bdbulksms.net/api.php?json</code></td></tr>
-              <tr><td>Account / Stats / Balance (plain)</td><td><code class="inline">https://api.bdbulksms.net/g_api.php</code></td></tr>
-              <tr><td>Account / Stats / Balance (JSON)</td><td><code class="inline">https://api.bdbulksms.net/g_api.php?json</code></td></tr>
-            </tbody>
-          </table>
+<main>
+    <section>
+        <h2>Introduction</h2>
+        <p><strong>API Links:</strong></p>
+        <ul>
+            <li>HTML Output: <a href="https://api.bdbulksms.net/api.php">https://api.bdbulksms.net/api.php</a></li>
+            <li>JSON Output: <a href="https://api.bdbulksms.net/api.php?json">https://api.bdbulksms.net/api.php?json</a></li>
+        </ul>
+        <p><strong>Non-SSL Version:</strong> You can also use <code>http</code> instead of <code>https</code>.</p>
+    </section>
 
-          <p class="small">Note: NON‑SSL (http) support is available if you need it (e.g. legacy systems). Prefer <code>https</code> when possible.</p>
-        </section>
+    <section>
+        <h2>Generate API Token</h2>
+        <p>Get your token here: <a href="https://gwb.li/token">https://gwb.li/token</a></p>
+        <p><strong>Parameters:</strong> <code>message</code>, <code>to</code>, <code>token</code></p>
+        <p><strong>Request Method:</strong> POST or GET</p>
+    </section>
 
-        <section aria-labelledby="token">
-          <h3 id="token">Generate Token</h3>
-          <p>Token generation link: <a class="link token-link" href="https://gwb.li/token" target="_blank" rel="noopener">https://gwb.li/token</a></p>
-          <p class="small">Use the returned token in queries: <code class="inline">token=YOUR_TOKEN_HERE</code></p>
-        </section>
+    <section>
+        <h2>Other API Usages (Balance, Expiry, Stats, etc.)</h2>
+        <ul>
+            <li>Plain Text Output: <a href="https://api.bdbulksms.net/g_api.php">https://api.bdbulksms.net/g_api.php</a></li>
+            <li>JSON Output: <a href="https://api.bdbulksms.net/g_api.php?json">https://api.bdbulksms.net/g_api.php?json</a></li>
+        </ul>
+    </section>
 
-        <section aria-labelledby="send-sms">
-          <h3 id="send-sms">Send SMS — Parameters</h3>
-          <ul>
-            <li><strong>message</strong> — Text message body.</li>
-            <li><strong>to</strong> — Destination number (single or comma separated).</li>
-            <li><strong>token</strong> — Your API token.</li>
-            <li><strong>Method</strong> — <em>POST</em> or <em>GET</em> accepted.</li>
-          </ul>
+    <section>
+        <h2>Examples</h2>
+        <ul>
+            <li>Check Balance: <a href="https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&balance">https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&balance</a></li>
+            <li>Check Balance (JSON): <a href="https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&balance&json">https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&balance&json</a></li>
+            <li>Check SMS Rate: <a href="https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&rate">https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&rate</a></li>
+            <li>Total SMS Sent by Token: <a href="https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&tokensms">https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&tokensms</a></li>
+            <li>Total SMS Sent by Main Account: <a href="https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&totalsms">https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&totalsms</a></li>
+            <li>Current Month SMS from Main Account: <a href="https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&monthlysms">https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&monthlysms</a></li>
+            <li>Current Month SMS from Token: <a href="https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&tokenmonthlysms">https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&tokenmonthlysms</a></li>
+            <li>SMS Sent in Specific Month (Main Account): <a href="https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&monthlysms=08-2025">https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&monthlysms=08-2025</a></li>
+            <li>SMS Sent in Specific Month (Token): <a href="https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&tokenmonthlysms=08-2025">https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&tokenmonthlysms=08-2025</a></li>
+            <li>Check Expiry Date: <a href="https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&expiry">https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&expiry</a></li>
+            <li>All Data Together: <a href="https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&expiry&rate&tokensms&totalsms&monthlysms&tokenmonthlysms">https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&expiry&rate&tokensms&totalsms&monthlysms&tokenmonthlysms</a></li>
+            <li>All Data Together (JSON): <a href="https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&expiry&rate&tokensms&totalsms&monthlysms&tokenmonthlysms&json">https://api.bdbulksms.net/g_api.php?token=yourtokencodehere&expiry&rate&tokensms&totalsms&monthlysms&tokenmonthlysms&json</a></li>
+        </ul>
+    </section>
+</main>
 
-          <div class="grid-2">
-            <div>
-              <strong>Example — curl (GET)</strong>
-              <div class="code-row" style="margin-top:8px">
-                <pre id="curl-get">curl "https://api.bdbulksms.net/api.php?token=YOURTOKEN&to=8801XXXXXXXXX&message=Hello%20from%20BDBulkSMS"</pre>
-                <button class="copy" data-target="curl-get">Copy</button>
-              </div>
-            </div>
+<footer>
+    &copy; 2025 <a href="https://bdbulksms.net">BDBulkSMS.net</a> - All Rights Reserved.
+</footer>
 
-            <div>
-              <strong>Example — curl (POST, JSON response)</strong>
-              <div class="code-row" style="margin-top:8px">
-                <pre id="curl-post">curl -X POST "https://api.bdbulksms.net/api.php?json" \
-  -d "token=YOURTOKEN" \
-  -d "to=8801XXXXXXXXX" \
-  -d "message=Hello from BDBulkSMS"</pre>
-                <button class="copy" data-target="curl-post">Copy</button>
-              </div>
-            </div>
-          </div>
-
-          <p class="small">আজ্ঞা: আপনি http ব্যবহার করতে পারেন যদি https মেনে নেওয়া না যায় — কিন্তু production এ https ব্যবহার করা উচিত।</p>
-        </section>
-
-        <section aria-labelledby="other-usage">
-          <h3 id="other-usage">Other API usages (Balance, Expiry, Stats etc)</h3>
-
-          <table>
-            <thead><tr><th>Action</th><th>Example URL</th></tr></thead>
-            <tbody>
-              <tr><td>Plain g_api (plain text)</td><td><code class="inline">https://api.bdbulksms.net/g_api.php</code></td></tr>
-              <tr><td>JSON output</td><td><code class="inline">https://api.bdbulksms.net/g_api.php?json</code></td></tr>
-              <tr><td>Balance (plain)</td><td><code class="inline">https://api.bdbulksms.net/g_api.php?token=YOURTOKEN&balance</code></td></tr>
-              <tr><td>Balance (JSON)</td><td><code class="inline">https://api.bdbulksms.net/g_api.php?token=YOURTOKEN&balance&json</code></td></tr>
-              <tr><td>Rate</td><td><code class="inline">https://api.bdbulksms.net/g_api.php?token=YOURTOKEN&rate</code></td></tr>
-              <tr><td>Token total SMS</td><td><code class="inline">https://api.bdbulksms.net/g_api.php?token=YOURTOKEN&tokensms</code></td></tr>
-              <tr><td>Account total SMS</td><td><code class="inline">https://api.bdbulksms.net/g_api.php?token=YOURTOKEN&totalsms</code></td></tr>
-              <tr><td>Current month (account)</td><td><code class="inline">...&monthlysms</code></td></tr>
-              <tr><td>Specific month (format 01-2022)</td><td><code class="inline">...&monthlysms=08-2025</code></td></tr>
-              <tr><td>Expiry</td><td><code class="inline">...&expiry</code></td></tr>
-              <tr><td>Combined (plain)</td><td><code class="inline">...&expiry&rate&tokensms&totalsms&monthlysms&tokenmonthlysms</code></td></tr>
-              <tr><td>Combined (json)</td><td><code class="inline">...&expiry&rate&tokensms&totalsms&monthlysms&tokenmonthlysms&json</code></td></tr>
-            </tbody>
-          </table>
-
-          <p class="small">উল্লেখ্য — <em>XX</em> ফিল্ডে মাস-বছরের ফরম্যাট হবে যেমন <code>01-2022</code> বা <code>08-2025</code>।</p>
-        </section>
-
-        <section aria-labelledby="sample-response">
-          <h3 id="sample-response">Sample JSON Response (send SMS)</h3>
-          <div class="code-row" style="margin-top:8px">
-            <pre id="json-sample">{
-  "status":"success",
-  "msg":"Message queued",
-  "data":{
-    "token":"YOURTOKEN",
-    "to":"8801XXXXXXXXX",
-    "message":"Hello from BDBulkSMS",
-    "sent":1
-  }
-}</pre>
-            <button class="copy" data-target="json-sample">Copy</button>
-          </div>
-        </section>
-
-        <section aria-labelledby="notes">
-          <h3 id="notes">Notes / Best Practices</h3>
-          <ul>
-            <li>Always store tokens securely and rotate them if leaked.</li>
-            <li>Use HTTPS in production for security.</li>
-            <li>For bulk sending, respect rate limits and segment lists to avoid throttling.</li>
-            <li>Test with a single number before large batches.</li>
-            <li>Check <span class="kbd">expiry</span> and <span class="kbd">balance</span> regularly via the g_api endpoints.</li>
-          </ul>
-
-          <p class="small">Bangla quick hint: টোকেন নিয়ে কাজ করার আগে <a class="link" href="https://gwb.li/token" target="_blank" rel="noopener">টোকেন জেনারেট</a> করুন — পরে <code>token=...</code> ব্যবহার করে APIs কল করুন।</p>
-        </section>
-      </main>
-
-      <!-- side -->
-      <aside class="side-actions">
-        <div class="card">
-          <h4 style="margin:0 0 8px 0">Quick Links</h4>
-          <a class="link" href="https://api.bdbulksms.net/api.php" target="_blank" rel="noopener">Send API (HTML)</a>
-          <a class="link" href="https://api.bdbulksms.net/api.php?json" target="_blank" rel="noopener">Send API (JSON)</a>
-          <a class="link" href="https://api.bdbulksms.net/g_api.php" target="_blank" rel="noopener">g_api (plain)</a>
-          <a class="link" href="https://api.bdbulksms.net/g_api.php?json" target="_blank" rel="noopener">g_api (JSON)</a>
-        </div>
-
-        <div class="card">
-          <h4 style="margin:0 0 8px 0">Example JS (fetch)</h4>
-          <pre id="fetch-js">fetch("https://api.bdbulksms.net/api.php?json", {
-  method: "POST",
-  headers: {"Content-Type":"application/x-www-form-urlencoded"},
-  body: new URLSearchParams({
-    token: "YOURTOKEN",
-    to: "8801XXXXXXXXX",
-    message: "Hello from BDBulkSMS"
-  })
-})
-.then(r => r.json()).then(console.log).catch(console.error);</pre>
-          <button class="copy" data-target="fetch-js">Copy</button>
-        </div>
-
-        <div class="card">
-          <h4 style="margin:0 0 8px 0">Useful</h4>
-          <div class="small">Token generator: <a class="link" href="https://gwb.li/token" target="_blank" rel="noopener">gwb.li/token</a></div>
-          <div style="height:8px"></div>
-          <div class="small">Keywords: <strong>bd bulk sms</strong>, <strong>bulk sms bd</strong>, <strong>bulksmsbd</strong></div>
-        </div>
-      </aside>
-    </div>
-
-    <footer class="small card" style="margin-top:18px">
-      <div>BDBulkSMS.net API — concise manual for sending and managing SMS. Keep tokens private. Designed for easy integration & automation.</div>
-      <div style="margin-top:6px">© BDBulkSMS — API docs • last updated: <strong>08 Aug 2025</strong></div>
-    </footer>
-  </div>
-
-  <script>
-    // Copy to clipboard for code blocks
-    document.querySelectorAll('button.copy').forEach(btn=>{
-      btn.addEventListener('click', async ()=> {
-        const id = btn.getAttribute('data-target');
-        const pre = document.getElementById(id);
-        if(!pre) return;
-        try {
-          await navigator.clipboard.writeText(pre.innerText);
-          btn.innerText = 'Copied ✓';
-          setTimeout(()=> btn.innerText = 'Copy', 1400);
-        } catch(e){
-          // fallback
-          const ta = document.createElement('textarea');
-          ta.value = pre.innerText;
-          document.body.appendChild(ta);
-          ta.select();
-          try { document.execCommand('copy'); btn.innerText='Copied ✓'; }
-          catch(e){ alert('Copy failed — select and copy manually.'); }
-          ta.remove();
-          setTimeout(()=> btn.innerText = 'Copy', 1400);
-        }
-      });
-    });
-
-    // Theme toggle (very small)
-    const root = document.documentElement;
-    const btn = document.getElementById('toggleTheme');
-    let light = false;
-    btn.addEventListener('click', ()=> {
-      light = !light;
-      if(light){
-        root.style.setProperty('--bg','#f6fbff');
-        root.style.setProperty('--card','#ffffff');
-        root.style.setProperty('--muted','#405060');
-        root.style.setProperty('--accent','#0066cc');
-        root.style.setProperty('--glass','rgba(0,0,0,0.03)');
-        document.body.style.color = '#06202a';
-        document.body.style.background = 'linear-gradient(180deg,#ffffff,#f4fafc)';
-        btn.innerText = 'Toggle theme';
-      } else {
-        root.style.removeProperty('--bg');
-        root.style.removeProperty('--card');
-        root.style.removeProperty('--muted');
-        root.style.removeProperty('--accent');
-        root.style.removeProperty('--glass');
-        document.body.style.color = '';
-        document.body.style.background = '';
-        btn.innerText = 'Toggle theme';
-      }
-    });
-
-    // small progressive enhancement: anchor targets open in new tab if external
-    document.querySelectorAll('a[target="_blank"]').forEach(a=>{
-      a.setAttribute('rel','noopener noreferrer');
-    });
-  </script>
 </body>
 </html>
